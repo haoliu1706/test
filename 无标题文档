@@ -1,0 +1,111 @@
+虚拟机密码为:zipline
+
+111.. .  service mongodb start
+################################
+
+222.  source zipline/zip_env/bin/activate
+##############################3#####
+333..  cd /zipline  
+
+
+###############################3
+4444 sudo bash vagrant_init.sh
+
+#################################
+
+
+555  jupyter notebook
+##############################
+
+
+666 http://192.168.1.120:8888
+#########################33#####
+
+google了后，发现果然如我的所料….  新系统有个叫sip的机制。 你暂时不能直接在终端进行 csrutil disable 会出现错误提示，引导你去mac osx的恢复模式进行操作。 
+
+ 
+
+由于El Capitan引入了SIP机制(System Integrity Protection)，默认下系统启用SIP系统完整性保护机制，无论是对于硬盘还是运行时的进程限制对系统目录的写操作。 这也是我们安装ipython失败的原因….
+
+现在的解决办法是取消SIP机制，具体做法是：
+
+重启电脑，按住Command+R(直到出现苹果标志)进入Recovery Mode(恢复模式)
+左上角菜单里找到实用工具 -> 终端
+输入csrutil disable回车
+重启Mac即可
+如果想重新启动SIP机制重复上述步骤改用csrutil enable即可
+
+我们现在再看看sip的状态, 这样再安装ipython、gevent再也不会提示无法写入的权限提示了/
+ 运行环境：Ubuntu16.04+Python2.7
+执行如下代码修改Jupyter的一部分文件的权限（执行完之后重新启动即可）：
+
+sudo chmod 777 ~/.local/share/jupyter/
+cd ~/.local/share/jupyter/
+ls
+sudo chmod 777 runtime/
+cd runtime/
+ls
+
+改完之后就没有问题啦！
+
+今天用Jupyter又出问题了，过程是这样的，我复制了之前制作的一个模板文件夹，cd进去之后运行Jupyter.py文件，自动打开浏览器之后显示如下错误：
+
+an error occurred while creating a new notebook
+
+Create Untitled.ipynb [Errno 13] Permission denied:
+
+当你点击浏览器上的python2或者python3来创建新的Untitled.ipynb时，就会提示你Permission denied:，权限不足~
+
+好吧，既然你说权限不足，那我们就用sudo指令看看会怎样吧（结果如下）：
+
+好，提示我你不要用sudo，没用的，就是创建不了，接着想：会不会是应为文件夹的权限问题导致我没有权限写数据到问价夹当中呢？于是我检查了之前能创建性的notebook的文件夹的权限：l
+
+上图是我已经修改过之后的结果（修改指令：chmod改权限  chown改归属者  chgrp改归属组）：
+
+   文件夹的权限应该为：drwxrwxr-x
+
+   文件的组应该属于：ubuntu-mm
+
+  文件的归属者应该为：ubuntu-mm
+
+同样的内部的文件的权限如下：
+
+如果你的文件夹或者文件夹或者文件不是上面你的权限情况，那你可是改成上面的情况适宜时，说不定这样你就能用啦~
+
+
+ 
+
+ 
+ 
+1
+2
+	
+$ csrutil status
+System Integrity Protection status: disabled.
+
+
+具体使用方法：打开virtual box ,输入以下命令
+
+    service mongodb start
+    source zipline/zip_env/bin/activate
+    sudo jupyter notebook
+    ifconfig
+
+得到虚拟机的IP 地址，例如IP为：192.168.1.120，则在windows浏览器输入 192.168.1.120:8888
+
+(2)对于本地安装，以ubuntu 为例：
+
+    git clone https://github.com/zhanghan1990/zipline
+    cd zipline
+    sudo apt-get install python-pip
+    sudo apt-get install mongodb
+    sudo pip install virtualenv
+    sudo apt-get install python-tk
+    virtualenv zipline_env
+    source zipline_env/bin/activate
+    pip install -r requirements.txt
+    python setup.py install
+    sudo service mongodb start
+    pip install xlrd
+    pip3 install jupyter
+
